@@ -1,0 +1,35 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const HourlyForecast = ({ location }) => {
+  const [hourlyData, setHourlyData] = useState([]);
+
+  useEffect(() => {
+    fetchHourlyForecast(location);
+  }, [location]);
+
+  const fetchHourlyForecast = async (location) => {
+    try {
+      const response = await axios.get(`https://api.weatherapi.com/v1/forecast.json?key=YOUR_API_KEY&q=${location}&hours=24`);
+      setHourlyData(response.data.forecast.forecastday[0].hour);
+    } catch (error) {
+      console.error("Error fetching hourly forecast", error);
+    }
+  };
+
+  return (
+    <div>
+      <h1>Hourly Forecast</h1>
+      {hourlyData.map((hour, index) => (
+        <div key={index}>
+          <p>{hour.time}</p>
+          <p>{hour.temp_c}°C / {hour.temp_f}°F</p>
+          <p>{hour.condition.text}</p>
+          <img src={hour.condition.icon} alt="weather icon" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default HourlyForecast;
